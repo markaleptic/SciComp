@@ -10,8 +10,19 @@ from point2d import point2d
 from ln import ln
 from absv import absv
 import math
+import sys
+
+GETFRAME_EXPR = 'sys._getframe({}).f_code.co_name'
 
 def make_var(var_name):
+    # Check to see if the calling function is make_pwr 
+    # and if it isn't, pass the var_name to make_pwr to 
+    # avoid errors around direct calls to make_var for
+    # variables to the first power.
+    callingFunc = eval(GETFRAME_EXPR.format(2))
+    if callingFunc != "make_pwr":
+        return make_pwr(var_name, 1.0)
+
     return var(name=var_name)
 
 def make_pwr(var_name, d):

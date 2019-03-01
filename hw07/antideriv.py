@@ -2,11 +2,12 @@
 
 #####################################
 # module: antideriv.py
-# YOUR NAME
-# YOUR A#
+# Mark Allred
+# A01647260
 #####################################
 
-## add your imports here
+from maker import make_pwr, make_pwr_expr, make_const, make_e_expr
+from maker import make_ln, make_quot, make_prod, make_plus, make_absv
 
 def antideriv(i):
     ## CASE 1: i is a constant
@@ -27,14 +28,14 @@ def antideriv(i):
             pass
         ## CASE 2.3: b is a sum
         elif isinstance(b, plus):
-            ## your code
-            here
+            ## your code here
+            pass 
         else:
             raise Exception('antideriv: unknown case')
     ### CASE 3: i is a sum, i.e., a plus object.
     elif isinstance(i, plus):
-        ## your code here
-        pass
+        return make_plus(elt_expr1 = antideriv(i.get_elt1()), elt_expr2 = antideriv(i.get_elt1()))
+
     ### CASE 4: is is a product, i.e., prod object,
     ### where the 1st element is a constant.
     elif isinstance(i, prod):
@@ -45,5 +46,6 @@ def antideriv(i):
 
                      
             
-    
+def lnIntegral():
+    return make_ln(make_absv(make_pwr('x', 1)))  
     

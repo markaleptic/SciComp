@@ -8,14 +8,14 @@
 ##############################################################
 
 import unittest
-import unittest
+import math
 from prod import prod
 from plus import plus
 from quot import quot
 from const import const
 from maker import make_const, make_pwr, make_const, make_plus
 from maker import make_prod, make_pwr_expr, make_quot, make_e_expr
-from maker import make_ln, make_absv
+from maker import make_ln, make_absv, make_var
 from tof import tof
 from deriv import deriv
 from deriv import logdiff
@@ -23,20 +23,20 @@ from poly12 import find_poly_1_zeros, find_poly_2_zeros
 from derivtest import loc_xtrm_1st_drv_test
 from derivtest import loc_xtrm_2nd_drv_test
 from infl import find_infl_pnts
-# from hw03 import maximize_revenue
-# from hw03 import dydt_given_x_dxdt
-# from hw05 import solve_pdeq, solve_pdeq_with_init_cond, find_growth_model
-# from hw05 import radioactive_decay, c14_carbon_dating, demand_elasticity
-# from hw05 import is_demand_elastic, expected_rev_dir
-from hw06_s19 import percent_retention_model, plot_retention
-from hw06_s19 import spread_of_disease_model, plot_spread_of_disease
-from hw06_s19 import plant_growth_model, plot_plant_growth
-from hw06_s19 import spread_of_news_model, plot_spread_of_news
-import math
+from antideriv import antideriv
+
+
+class LogicTests(unittest.TestCase):
+    def test_make_var_pass_to_make_pwr(self):
+        varExpr = make_var('x')
+        pwrExpr = make_pwr('x', 1.0)
+        assert str(varExpr) == str(pwrExpr)
+
+    def runTest(self):
+        pass
 
 
 class Assign01UnitTests(unittest.TestCase):
-
     def test_assgn_01_ut_01(self):
         print('\n***** Assign 01: Unit Test 01 ************')
         fex = prod(mult1=make_const(6.0),
@@ -767,210 +767,214 @@ class Assign04UnitTests(unittest.TestCase):
         
     def runTest(self):
         pass
-    
-
-# class Assign05UnitTests(unittest.TestCase):
-#     def test_01(self):
-#         print('\n***** Unit Test 01 *****')
-#         eq = solve_pdeq(make_const(1.0), make_const(1.0))
-#         assert not eq is None
-#         print(eq)
-#         eqf = tof(eq)
-#         assert not eqf is None
-#         err = 0.0001
-#         gt = lambda t: math.e**t
-#         for t in range(100):
-#             assert abs(gt(t) - eqf(t)) <= err
-#         print('Unit Test 01: pass')
-
-#     def test_02(self):
-#         print('\n***** Unit Test 02 *****')
-#         eq = solve_pdeq(make_const(4.0), make_const(1.0/3.0))
-#         assert not eq is None
-#         print(eq)
-#         eqf = tof(eq)
-#         assert not eqf is None
-#         gt = lambda t: math.e**((1.0/12.0)*t)
-#         for t in range(100):
-#             assert abs(gt(t) - eqf(t)) <= 0.0001
-#         print('Test 02: pass')
-
-#     def test_03(self):
-#         print('\n***** Unit Test 03 *****')
-#         eq = solve_pdeq_with_init_cond(make_const(1.0),
-#                                     make_const(3.0))
-#         assert not eq is None
-#         print(eq)
-#         eqf = tof(eq)
-#         assert not eqf is None
-#         def gt(t): return math.e**(3.0*t)
-#         err = 0.0001
-#         for t in range(100):
-#             assert abs(gt(t) - eqf(t)) <= err
-#         print('Test 03: pass')
-
-#     def test_04(self):
-#         print('\n***** Unit Test 04 *****')
-#         model = find_growth_model(make_const(20000), make_const(24*2), make_const(4))
-#         print(model)
-#         modelFunc = tof(model)
-#         gt = lambda x: 20000 * math.e **(x * (math.log(2) / 24))
-#         err = .0001
-
-#         for x in range(12):
-#             assert abs(gt(x) - modelFunc(x)) <= err
-
-#         print('Test 04: pass')
-
-#     def test_05(self):
-#         print('\n***** Unit Test 05 *****')
-#         model = radioactive_decay(make_const(0.021), make_const(8), make_const(10))
-#         modelFunc = tof(model)
-#         print(model)
-#         gt = lambda x: 8 * math.e ** (-0.021 * x)
-#         err = .0001
-
-#         for x in range(40):
-#             assert abs(gt(x) - modelFunc(x)) <= err
-        
-
-#         print('Test 05: pass')
-
-#     def test_06_a(self):
-#         print('\n***** Unit Test 06 a) *****')
-#         amt = make_const(0.2)
-#         year = c14_carbon_dating(amt)
-#         print(year)
-#         print('Test 06 a): pass')
-
-#     def test_06_b(self):
-#         print('\n***** Unit Test 06 b) *****')
-#         amt = make_const(58.3 / 100)
-#         year = c14_carbon_dating(amt)
-#         print(year)
-#         print('Test 06 b): pass')
-
-#     def test_07(self):
-#         print('\n***** Unit Test 07 *****')
-#         demand = make_plus(make_const(100), make_prod(make_const(-2.0), make_pwr('x', 1.0)))
-#         print(demand)
-#         gt = lambda x: (2 * x) / (100 - 2 * x)
-#         err = 0.0001
-
-#         for p in range(49):
-#             price = make_const(p)
-#             assert abs(demand_elasticity(demand, price).get_val() - gt(p)) <= err
-
-#         print('Test 07: pass')
-
-#     def test_08(self):
-#         print('\n***** Unit Test 08 *****')
-#         demand = make_plus(elt_expr1 = make_quot(make_const(18000), make_pwr('x', 1.0)), elt_expr2 = make_const(-1500))
-#         print(demand)
-#         price = make_const(6.0)
-#         print("Is demand elastic at $%d?" % price.get_val())
-#         print(is_demand_elastic(demand, price))
-#         print('Test 08: pass')
-    
-#     def test_09(self):
-#         print('\n***** Unit Test 09 *****')
-#         demand = make_plus(elt_expr1 = make_quot(make_const(18000), make_pwr('x', 1.0)), elt_expr2 = make_const(-1500))
-#         print(demand)
-#         price = make_const(6.0)
-#         price_move = make_const(-1.0)
-#         print("If the price changes by $%d, revenue should change by $%d." % (price_move.get_val(), expected_rev_dir(demand, price, price_move).get_val()))
-#         print('Test 09: pass')
-    
-
-#     def runTest(self):
-#         pass
 
 
-class Assign06UnitTests(unittest.TestCase):
-    def test_correct_percent_model(self):
-        print('\n***** Unit Test 01 *****')
-        a = make_const(5)
-        lmbda = make_const(10)
-        model = percent_retention_model(lmbda, a)
-        print(model)
-        modelFunc = tof(model)
-        gt = lambda x: 95 * math.e ** (-10 * x) + 5
-        err = 0.001
-
-        for i in range(100):
-            assert abs(gt(i) - modelFunc(i)) <= err
-
+class Assign07UnitTests(unittest.TestCase):
+    def test_01(self):
+        print('\n***** Test 01 ***********')
+        fex = make_pwr('x', 2.0)
+        print(fex)
+        afex = antideriv(fex)
+        assert not afex is None
+        def gt(x): return (1.0/3.0)*(x**3.0)
+        afexf = tof(afex)
+        assert not afexf is None
+        err = 0.0001
+        for i in range(1, 101):
+            assert abs(afexf(i) - gt(i)) <= err
+        print(afex)
         print('Test 01: pass')
 
-    def test_correct_percent_graph(self):
-        print('\n***** Unit Test 02 *****')
-        a = make_const(15)
-        lmbda = make_const(0.5)
-        model = percent_retention_model(lmbda, a)
-        print(model)
-        #plot_retention(lmbda, a, make_const(0), make_const(30))
-        modelFunc = tof(model)
-        gt = lambda x: 85 * math.e ** (-0.5 * x) + 15
-        err = 0.001
 
-        for i in range(100):
-            assert abs(gt(i) - modelFunc(i)) <= err
-
+    def test_02(self):
+        print('\n***** Test 02 ***********')
+        fex = make_e_expr(make_prod(make_const(-2.0),
+                                    make_pwr('x', 1.0)))
+        print(fex)
+        afex = antideriv(fex)
+        assert not afex is None
+        def gt(x): return (-0.5)*(math.e**(-2.0*x))
+        afexf = tof(afex)
+        assert not afexf is None
+        err = 0.0001
+        for i in range(0, 101):
+            assert abs(afexf(i) - gt(i)) <= err
+        print(afex)
         print('Test 02: pass')
 
+
     def test_03(self):
-        print('\n***** Unit Test 03 *****')
-        prm = percent_retention_model(make_const(0.5), make_const(15.0))
-        prmf = tof(prm)
-        err = .001
-        assert abs(46.2697524996 - prmf(2)) <= err
+        print('\n***** Test 03 ***********')
+        fex = make_pwr('x', 0.5)
+        print(fex)
+        afex = antideriv(fex)
+        assert not afex is None
+        def gt(x): return (2.0/3.0)*(x**(3.0/2.0))
+        afexf = tof(afex)
+        assert not afexf is None
+        err = 0.0001
+        for i in range(1, 101):
+            assert abs(afexf(i) - gt(i)) <= err
+        print(afex)
         print('Test 03: pass')
-        
+
+
     def test_04(self):
-        plot_spread_of_disease(make_const(500000),
-                               make_const(0.0),
-                               make_const(200.0),
-                               make_const(1.0),
-                               make_const(500.0),
-                               make_const(0.0),
-                               make_const(7.0))
+        print('\n***** Test 04 ***********')
+        fex = make_pwr('x', -2.0)
+        print(fex)
+        afex = antideriv(fex)
+        assert not afex is None
+        def gt(x): return -1.0/x
+        afexf = tof(afex)
+        assert not afexf is None
+        err = 0.0001
+        for i in range(1, 101):
+            assert abs(afexf(i) - gt(i)) <= err
+        print(afex)
+        print('Test 04: pass')
 
 
     def test_05(self):
-        plot_plant_growth(make_const(55.0),
-                      make_const(9.0),
-                      make_const(8.0),
-                      make_const(25.0),
-                      make_const(48.0),
-                      make_const(9.0),
-                      make_const(50.0))
+        print('\n***** Test 05 ***********')
+        fex = make_pwr('x', -1.0)
+        print(fex)
+        afex = antideriv(fex)
+        assert not afex is None
+        afexf = tof(afex)
+        assert not afexf is None
+        def gt(x): return math.log(abs(x), math.e)
+        err = 0.0001
+        for i in range(1, 101):
+            assert abs(afexf(i) - gt(i)) <= err
+        for i in range(-100, 0):
+            assert abs(afexf(i) - gt(i))
+        print('Test 05: pass')
+
 
     def test_06(self):
-        model = plant_growth_model(make_const(55.0),
-                      make_const(9.0),
-                      make_const(8.0),
-                      make_const(25.0),
-                      make_const(48.0))
-        mf = tof(model)
-        err = 0.001
-        assert abs(mf(9) - 8) <= err
-        assert abs(mf(25) - 48) <= err
-        
+        print('\n***** Test 06 ***********')
+        fex1 = make_pwr('x', -3.0)
+        fex2 = make_prod(make_const(7.0),
+                        make_e_expr(make_prod(make_const(5.0),
+                                            make_pwr('x', 1.0))))
+        fex3 = make_prod(make_const(4.0),
+                        make_pwr('x', -1.0))
+        fex4 = make_plus(fex1, fex2)
+        fex = make_plus(fex4, fex3)
+        print(fex)
+        afex = antideriv(fex)
+        assert not afex is None
+        print(afex)
+        def gt(x):
+            v1 = -0.5*(x**(-2.0))
+            v2 = (7.0/5.0)*(math.e**(5.0*x))
+            v3 = 4.0*(math.log(abs(x), math.e))
+            return v1 + v2 + v3
+        afexf = tof(afex)
+        assert not afexf is None
+        err = 0.0001
+        for i in range(1, 10):
+            print(afexf(i), gt(i))
+            assert abs(afexf(i) - gt(i)) <= err * gt(i)
+        print('Test 06: pass')
+
+
     def test_07(self):
-        plot_spread_of_news(make_const(50000),
-                        make_const(0.3),
-                        make_const(0.0),
-                        make_const(50.0))
+        print('\n***** Test 07 ***********')
+        fex = make_prod(make_const(4.0), make_pwr('x', 3.0))
+        print(fex)
+        afex = antideriv(fex)
+        assert not afex is None
+        print(afex)
+        fexf = tof(fex)
+        assert not fexf is None
+        fex2 = deriv(afex)
+        assert not fex2 is None
+        print(fex2)
+        fex2f = tof(fex2)
+        assert not fex2f is None
+        err = 0.0001
+        for i in range(11):
+            assert abs(fexf(i) - fex2f(i)) <= err
+        print('Test 07: pass')
+
 
     def test_08(self):
-        sn = spread_of_news_model(make_const(50000),
-                              make_const(0.3))
-        dsn = deriv(sn)
-        dsnf = tof(dsn)
-        err = .001
-        assert abs(dsnf(0) - 15000.0) <= err
-        assert abs(dsnf(10) - 746.806025518) <= err
-        assert abs(dsnf(30) - 1.8511470613) <= err
+        print('\n***** Test 08 ***********')
+        fex1 = make_plus(make_prod(make_const(5.0),
+                                make_pwr('x', 1.0)),
+                        make_const(-7.0))
+        fex = make_pwr_expr(fex1, -2.0)
+        print(fex)
+        afex = antideriv(fex)
+        assert not afex is None
+        print(afex)
+        afexf = tof(afex)
+        err = 0.0001
+        def gt(x):
+            return (-1.0/5.0)*((5*x - 7.0)**-1)
+        for i in range(1, 100):
+            assert abs(afexf(i) - gt(i)) <= err
+        fexf = tof(fex)
+        assert not fexf is None
+        fex2 = deriv(afex)
+        assert not fex2 is None
+        print(fex2)
+        fex2f = tof(fex2)
+        assert not fex2f is None
+        for i in range(1, 100):
+            assert abs(fexf(i) - fex2f(i)) <= err
+        print('Test 08: pass')
+
+
+    def test_09(self):
+        print('\n***** Test 09 ***********')
+        fex0 = make_plus(make_pwr('x', 1.0), make_const(2.0))
+        fex1 = make_pwr_expr(fex0, -1.0)
+        fex = make_prod(make_const(3.0), fex1)
+        print(fex)
+        afex = antideriv(fex)
+        err = 0.0001
+        afexf = tof(afex)
+        def gt(x):
+            return 3.0*math.log(abs(2.0 + x), math.e)
+        for i in range(1, 101):
+            assert abs(afexf(i) - gt(i)) <= err
+        assert not afex is None
+        print(afex)
+        fexf = tof(fex)
+        assert not fexf is None
+        fex2 = deriv(afex)
+        assert not fex2 is None
+        print(fex2)
+
+
+    def test_10(self):
+        print('\n***** Test 10 ***********')
+        fex0 = make_prod(make_const(3.0), make_pwr('x', 1.0))
+        fex1 = make_plus(fex0, make_const(2.0))
+        fex = make_pwr_expr(fex1, 4.0)
+        print(fex)
+        afex = antideriv(fex)
+        assert not afex is None
+        print(afex)
+        afexf = tof(afex)
+        err = 0.0001
+        def gt(x):
+            return (1.0/15)*((3*x + 2.0)**5)
+        for i in range(1, 10):
+            assert abs(afexf(i) - gt(i)) <= err
+        fexf = tof(fex)
+        assert not fexf is None
+        fex2 = deriv(afex)
+        assert not fex2 is None
+        print(fex2)
+        fex2f = tof(fex2)
+        assert not fex2f is None
+        for i in range(1, 1000):
+            assert abs(fexf(i) - fex2f(i)) <= err
+        print('Test 10: pass')
 
 
     def runTest(self):
