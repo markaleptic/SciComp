@@ -7,6 +7,7 @@
 # bugs to vladimir kulyukin via canvas
 ##############################################################
 
+
 import unittest
 import math
 from prod import prod
@@ -792,6 +793,7 @@ class Assign07UnitTests(unittest.TestCase):
                                     make_pwr('x', 1.0)))
         print(fex)
         afex = antideriv(fex)
+        print(afex)
         assert not afex is None
         def gt(x): return (-0.5)*(math.e**(-2.0*x))
         afexf = tof(afex)
@@ -841,6 +843,7 @@ class Assign07UnitTests(unittest.TestCase):
         print(fex)
         afex = antideriv(fex)
         assert not afex is None
+        print(afex)
         afexf = tof(afex)
         assert not afexf is None
         def gt(x): return math.log(abs(x), math.e)
@@ -848,7 +851,7 @@ class Assign07UnitTests(unittest.TestCase):
         for i in range(1, 101):
             assert abs(afexf(i) - gt(i)) <= err
         for i in range(-100, 0):
-            assert abs(afexf(i) - gt(i))
+            assert abs(afexf(i) - gt(i)) <= err
         print('Test 05: pass')
 
 

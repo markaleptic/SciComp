@@ -117,7 +117,7 @@ def ln_tof(expr):
     assert isinstance(expr, ln)
 
     def compose(f):
-        return lambda x: math.log(f(x))
+        return lambda x: math.log(f(x), math.e)
 
     return compose(tof(expr.get_expr()))
 
