@@ -36,8 +36,11 @@ def generate_file_names(ftype, rootdir):
             generate_file_names(ftype, d)
 
 def read_img_dir(ftype, imgdir):
-    ## your code here
-    pass
+    filesAndImages = []
+    for file in generate_file_names(ftype, imgdir):
+        imageArr = cv2.imread(file)
+        filesAndImages.append( (file, imageArr))
+    return filesAndImages
 
 def grayscale(i, imglst):
     ## your code here
