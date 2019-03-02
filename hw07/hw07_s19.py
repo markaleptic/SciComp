@@ -35,6 +35,10 @@ def generate_file_names(ftype, rootdir):
         for d in dirlist:
             generate_file_names(ftype, d)
 
+##
+# Function returns list of 2-tuples. Each tuple contains full path to image and np 
+# 2darray of said image. Function takes file types in the form of '.jpg' and
+# directory to traverse for finding files.
 def read_img_dir(ftype, imgdir):
     filesAndImages = []
     for file in generate_file_names(ftype, imgdir):
@@ -42,30 +46,97 @@ def read_img_dir(ftype, imgdir):
         filesAndImages.append( (file, imageArr))
     return filesAndImages
 
+
+##
+# Function returns i-th image path and image array
+def getImageAndPath(i, imglst):
+    # Get location of file
+    imgLoc = imglst[i][0]
+    # Get image np array
+    imgArr = imglst[i][1]
+    return imgLoc, imgArr
+
+
+##
+# Function displays original and grayscaled image
 def grayscale(i, imglst):
-    ## your code here
-    pass
+    # Get location of file for title of image and image array
+    imgLoc, imgArr = getImageAndPath(i, imglst)
+    
+    # Convert image to grayscale
+    grayImage = cv2.cvtColor(imgArr, cv2.COLOR_RGB2GRAY)
 
+    # Show color image
+    cv2.imshow(imgLoc, imgArr)
+    # Show grayscaled image
+    cv2.imshow('Grayscaled', cv2.cvtColor(grayImage, cv2.COLOR_GRAY2RGB))
+
+
+##
+# Function displays and splits an image into rgb color channels and displays each 
+# color channel in that color.
 def split_merge(i, imglst):
-    ## your code here
-    pass
+    # Get location of file for title of image and image array
+    imgLoc, imgArr = getImageAndPath(i, imglst)
 
+    # Split image into channels
+    b,g,r = cv2.split(imgArr)
+    # Create np.zeros arrays for merging with each color chanel
+    zeros = np.zeros(imgArr.shape[:2], dtype='uint8')
+    # Merge zeros with each color channel to display single color image
+    b = cv2.merge([b,zeros,zeros])
+    g = cv2.merge([zeros,g,zeros])
+    r = cv2.merge([zeros,zeros,r])
+
+    # Show original full image
+    cv2.imshow(imgLoc, imgArr)
+
+    # Show color channel images with their color as title.
+    cv2.imshow("Blue",b)
+    cv2.imshow("Green",g)
+    cv2.imshow("Red",r)
+
+
+##
+# Function displays an image and a color amplifed version based on passed in color and 
+# amplifcation amount.
 def amplify(i, imglst, c, amount):
-    ## your code here
-    pass
+    # Get location of file for title of image and image array
+    imgLoc, imgArr = getImageAndPath(i, imglst)
+    
+    # Split channels for amplication
+    b,g,r = cv2.split(imgArr)
+
+    # Amplify specified color
+    if c=='b' or c=='B':
+        b+=amount
+    elif c=='g' or c=='G':
+        g+=amount
+    elif c=='r' or c=='R':
+        r+=amount
+    else:
+        print("Invalid color provided. Exiting function.")
+        return
+    # Combine channels to create image
+    amplifiedImage = cv2.merge([b,g,r])
+    # Show original and amplified image
+    cv2.imshow(imgLoc, imgArr)
+    cv2.imshow("Amplified", amplifiedImage)
+
 
 ## here is main for you to test your implementations.
 ## remember to destroy all windows after you are done.
 if __name__ == '__main__':
-    #il = read_img_dir(args['ftype'], args['imgdir'])
-    #verify_img_list(il)
-    #grayscale(0, il)
-    #split_merge(0, il)
-    #amplify(0, il, 'b', 200)
-    #cv2.waitKey()
-    #cv2.destroyAllWindows()
-    pass
+    # Convert to unittests
+    # Unit test 1
+    imglist = read_img_dir('.jpg', '.')
+    print("Length: ", len(imglist))
+    print(imglist[0][0])
+    print(imglist[0][1])
+    print(imglist[0][1].shape)
     
-
-
- 
+    grayscale(0, imglist)
+    split_merge(0, imglist)
+    amplify(0, imglist, 'b', 200)
+    cv2.waitKey()
+    cv2.destroyAllWindows()
