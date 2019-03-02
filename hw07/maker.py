@@ -17,8 +17,8 @@ GETFRAME_EXPR = 'sys._getframe({}).f_code.co_name'
 def make_var(var_name):
     # Check to see if the calling function is make_pwr 
     # and if it isn't, pass the var_name to make_pwr to 
-    # avoid errors around direct calls to make_var for
-    # variables to the first power.
+    # avoid the error when a user wants 'x^1.0' but 
+    # doesn't call make_pwr.
     callingFunc = eval(GETFRAME_EXPR.format(2))
     if callingFunc != "make_pwr":
         return make_pwr(var_name, 1.0)
