@@ -88,7 +88,34 @@ def plot_riemann_error(fexpr, a, b, gt, n):
   assert isinstance(b, const)
   assert isinstance(gt, const)
   assert isinstance(n, const)
-  LEFT = -1.0
-  MID = 0.0
-  RIGHT = +1.0
-  # your code here
+  
+  ppL = -1.0
+  ppM =  0.0
+  ppR = +1.0
+
+  leftApprox  = riemann_approx_with_gt(fexpr, a, b, gt, n, ppL)
+  midApprox   = riemann_approx_with_gt(fexpr, a, b, gt, n, ppM)
+  rightApprox = riemann_approx_with_gt(fexpr, a, b, gt, n, ppR)
+  
+  xvals = np.linspace(1, n.get_val()+1, n.get_val())
+  leftErr = [err[1].get_val() for err in leftApprox]
+  print(leftErr)
+  midErr = [err[1].get_val() for err in midApprox]
+  print(midErr)
+  rightErr = [err[1].get_val() for err in rightApprox]
+  print(rightErr)
+
+  fig = plt.figure(1)
+  fig.suptitle('Riemann Approximation Error')
+  plt.xlabel('n')
+  plt.ylabel('err')
+  plt.xlim(0, n.get_val())
+  plt.grid()
+  plt.plot(xvals, leftErr, label = 'left', c = 'g')
+  plt.plot(xvals, midErr, label = 'mid', c = 'r')
+  plt.plot(xvals, rightErr, label = 'right', c = 'b')
+  plt.legend(loc = 'best')
+  plt.show()
+
+
+  

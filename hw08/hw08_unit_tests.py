@@ -1045,6 +1045,27 @@ class Assign08UnitTests(unittest.TestCase):
         assert abs(approx.get_val() - 0.386296444432) <= err
         print('Test 04: pass')
 
+    def test_05(self):
+        print('\n***** Test 05 *****')
+        fex = make_prod(make_const(3.0), make_pwr('x', 2.0))
+        fex = make_plus(fex, make_e_expr(make_pwr('x', 1.0)))
+        plot_riemann_error(fex, make_const(-1.0),
+                        make_const(1.0),
+                        make_const(4.35),
+                        make_const(10))
+        print('Test 05: pass')
+
+    
+    def test_06(self):
+        print('\n***** Test 06 *****')
+        fex = make_prod(make_const(3.0), make_pwr('x', 2.0))
+        fex = make_plus(fex, make_e_expr(make_pwr('x', 1.0)))
+        plot_riemann_error(fex, make_const(-1.0),
+                        make_const(1.0),
+                        make_const(4.35),
+                        make_const(50))
+        print('Test 06: pass')
+        
     def runTest(self):
         pass
 
