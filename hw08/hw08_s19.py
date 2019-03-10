@@ -2,8 +2,8 @@
 
 #########################################
 # module: hw08_s19.py
-# YOUR NAME
-# YOUR A#
+# Mark Allred
+# A01647260
 #########################################
 
 ### modify these as you see fit.

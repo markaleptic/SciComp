@@ -1041,6 +1041,7 @@ class Assign08UnitTests(unittest.TestCase):
                                 make_const(2.0),
                                 make_const(100),
                                 pp=0)
+        print(approx)
         assert abs(approx.get_val() - 0.386296444432) <= err
         print('Test 04: pass')
 
