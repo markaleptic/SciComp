@@ -42,23 +42,25 @@ def riemann_midpoint(fexpr, a, b, n, dx):
   a = a.get_val()
   xvals1 = np.array([a + i * dx for i in range(n.get_val())])
   xvals2 = np.array([a + i * dx for i in range(1, n.get_val()+1)]) 
-  xvals = np.array([(0.5 * (xvals1[i] + xvals2[i]) for i in range(n.get_val()))])
+  assert xvals1.size == xvals2.size
+  xvals = np.array([0.5 * (xvals1[i] + xvals2[i]) for i in range(xvals1.size)])
   yvals = np.array([fexpr(x) for x in xvals])
-  return sum(yvals) * dx
+
+  return make_const(np.sum(yvals) * dx)
 
 
 def riemann_left(fexpr, a, b, n, dx):
   a = a.get_val()
   xvals = np.array([a + i * dx for i in range(n.get_val())])
   yvals = np.array([fexpr(x) for x in xvals])
-  return sum(yvals) * dx
+  return make_const(sum(yvals) * dx)
 
 
 def riemann_right(fexpr, a, b, n, dx):
   a = a.get_val()
   xvals = np.array([a + i * dx for i in range(1, n.get_val()+1)])
   yvals = np.array([fexpr(x) for x in xvals])
-  return sum(yvals) * dx
+  return make_const(sum(yvals) * dx)
 
 
 def riemann_approx_with_gt(fexpr, a, b, gt, n_upper, pp=0):
@@ -75,8 +77,8 @@ def riemann_approx_with_gt(fexpr, a, b, gt, n_upper, pp=0):
   errorAndValue = [0] * n_upper.get_val()
   
   for i in range(1, n_upper.get_val()+1):
-    approx = riemann_approx(a, b, make_const(i), pp)
-    errorAndValue[i] = (i, abs(approx - gt))
+    approx = riemann_approx(fexpr, a, b, make_const(i), pp)
+    errorAndValue[i-1] = (i, make_const(abs(approx.get_val() - gt.get_val())))
   
   return errorAndValue
   
@@ -86,4 +88,7 @@ def plot_riemann_error(fexpr, a, b, gt, n):
   assert isinstance(b, const)
   assert isinstance(gt, const)
   assert isinstance(n, const)
+  LEFT = -1.0
+  MID = 0.0
+  RIGHT = +1.0
   # your code here
