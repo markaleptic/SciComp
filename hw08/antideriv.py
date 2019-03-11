@@ -20,7 +20,7 @@ from consts import is_e_const, is_pi_const, is_zero_const
 from deriv import deriv
 from ispwr import is_pwr_0, is_pwr_1
 from simplify import simplify
-#from smplfy import smplfy
+from tof import tof
 
 
 def antideriv(i):
@@ -29,7 +29,7 @@ def antideriv(i):
 def indeffiniteIntegral(i):
     ## CASE 1: i is a constant
     if isinstance(i, const):
-        return make_pwr('x', 1.0)
+        return make_prod(mult_expr1=i,mult_expr2=make_pwr('x', 1.0))
     
     ## CASE 2: i is a pwr
     elif isinstance(i, pwr):
@@ -91,10 +91,6 @@ def indeffiniteIntegral(i):
             # Create sum expression with new power 
             newVar = make_pwr_expr(b, newDeg)
             return make_prod(mult_expr1=coeff, mult_expr2=newVar)
-
-
-            
-
         else:
             raise Exception('antideriv: unknown case')
             
@@ -109,17 +105,24 @@ def indeffiniteIntegral(i):
     else:
         raise Exception('antideriv: unknown case')
 
-                     
-            
+
+##
+# Return ln |expr| for ease of reading in antideriv
 def lnIntegral(expr = make_pwr('x', 1.0)):
     return make_ln(make_absv(expr))
 
+
+##
+# Return definite integral of expression from a to b
 def antiderivdef(expr, a, b):
     assert isinstance(a, const)
     assert isinstance(b, const)
-    ## your code here
-    pass
-                     
-            
     
-    
+    integral = antideriv(expr)
+    assert integral is not None
+
+    integralf = tof(integral)
+    assert integralf is not None
+
+    definite = integralf(b.get_val()) - integralf(a.get_val())
+    return make_const(definite)

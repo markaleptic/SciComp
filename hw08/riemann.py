@@ -40,25 +40,25 @@ def riemann_approx(fexpr, a, b, n, pp=0):
 
 def riemann_midpoint(fexpr, a, b, n, dx):
   a = a.get_val()
-  xvals1 = np.array([a + i * dx for i in range(n.get_val())])
-  xvals2 = np.array([a + i * dx for i in range(1, n.get_val()+1)]) 
+  xvals1 = np.array([a + i * dx for i in range(n.get_val())], dtype=np.float32)
+  xvals2 = np.array([a + i * dx for i in range(1, n.get_val()+1)], dtype=np.float32) 
   assert xvals1.size == xvals2.size
-  xvals = np.array([0.5 * (xvals1[i] + xvals2[i]) for i in range(xvals1.size)])
-  yvals = np.array([fexpr(x) for x in xvals])
+  xvals = np.array([0.5 * (xvals1[i] + xvals2[i]) for i in range(xvals1.size)], dtype=np.float32)
+  yvals = np.array([fexpr(x) for x in xvals], dtype=np.float32)
 
   return make_const(np.sum(yvals) * dx)
 
 
 def riemann_left(fexpr, a, b, n, dx):
   a = a.get_val()
-  xvals = np.array([a + i * dx for i in range(n.get_val())])
-  yvals = np.array([fexpr(x) for x in xvals])
+  xvals = np.array([a + i * dx for i in range(n.get_val())], dtype=np.float32)
+  yvals = np.array([fexpr(x) for x in xvals], dtype=np.float32)
   return make_const(sum(yvals) * dx)
 
 
 def riemann_right(fexpr, a, b, n, dx):
   a = a.get_val()
-  xvals = np.array([a + i * dx for i in range(1, n.get_val()+1)])
+  xvals = np.array([a + i * dx for i in range(1, n.get_val()+1)], dtype=np.float32)
   yvals = np.array([fexpr(x) for x in xvals])
   return make_const(sum(yvals) * dx)
 
@@ -89,21 +89,22 @@ def plot_riemann_error(fexpr, a, b, gt, n):
   assert isinstance(gt, const)
   assert isinstance(n, const)
   
+  # Partion Points for left, mid, & right Riemann Approximation
   ppL = -1.0
   ppM =  0.0
   ppR = +1.0
 
+  # Generate error approximations for the given expression, bounds, actual value, and upper bound on subintervals
   leftApprox  = riemann_approx_with_gt(fexpr, a, b, gt, n, ppL)
   midApprox   = riemann_approx_with_gt(fexpr, a, b, gt, n, ppM)
   rightApprox = riemann_approx_with_gt(fexpr, a, b, gt, n, ppR)
   
+  # Create x-values for graph
   xvals = np.linspace(1, n.get_val()+1, n.get_val())
+  # Create y-values for each error by slicing out error values for each approximation
   leftErr = [err[1].get_val() for err in leftApprox]
-  print(leftErr)
   midErr = [err[1].get_val() for err in midApprox]
-  print(midErr)
   rightErr = [err[1].get_val() for err in rightApprox]
-  print(rightErr)
 
   fig = plt.figure(1)
   fig.suptitle('Riemann Approximation Error')

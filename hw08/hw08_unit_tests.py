@@ -3,8 +3,6 @@
 
 #############################################################
 # module: unit_tests.py
-# description: unit tests for CS 3430: S19: Assignment 01
-# bugs to vladimir kulyukin via canvas
 ##############################################################
 
 
@@ -24,8 +22,10 @@ from poly12 import find_poly_1_zeros, find_poly_2_zeros
 from derivtest import loc_xtrm_1st_drv_test
 from derivtest import loc_xtrm_2nd_drv_test
 from infl import find_infl_pnts
-from antideriv import antideriv
+from antideriv import antideriv, antiderivdef
 from riemann import riemann_approx, riemann_approx_with_gt, plot_riemann_error
+from defintegralapprox import midpoint_rule, trapezoidal_rule, simpson_rule
+
 
 
 class LogicTests(unittest.TestCase):
@@ -1045,27 +1045,88 @@ class Assign08UnitTests(unittest.TestCase):
         assert abs(approx.get_val() - 0.386296444432) <= err
         print('Test 04: pass')
 
-    def test_05(self):
-        print('\n***** Test 05 *****')
-        fex = make_prod(make_const(3.0), make_pwr('x', 2.0))
-        fex = make_plus(fex, make_e_expr(make_pwr('x', 1.0)))
-        plot_riemann_error(fex, make_const(-1.0),
-                        make_const(1.0),
-                        make_const(4.35),
-                        make_const(10))
-        print('Test 05: pass')
+    # def test_05(self):
+    #     print('\n***** Test 05 *****')
+    #     fex = make_prod(make_const(3.0), make_pwr('x', 2.0))
+    #     fex = make_plus(fex, make_e_expr(make_pwr('x', 1.0)))
+    #     plot_riemann_error(fex, make_const(-1.0),
+    #                     make_const(1.0),
+    #                     make_const(4.35),
+    #                     make_const(10))
+    #     print('Test 05: pass')
 
     
-    def test_06(self):
-        print('\n***** Test 06 *****')
-        fex = make_prod(make_const(3.0), make_pwr('x', 2.0))
-        fex = make_plus(fex, make_e_expr(make_pwr('x', 1.0)))
-        plot_riemann_error(fex, make_const(-1.0),
-                        make_const(1.0),
-                        make_const(4.35),
-                        make_const(50))
-        print('Test 06: pass')
-        
+    # def test_06(self):
+    #     print('\n***** Test 06 *****')
+    #     fex = make_prod(make_const(3.0), make_pwr('x', 2.0))
+    #     fex = make_plus(fex, make_e_expr(make_pwr('x', 1.0)))
+    #     plot_riemann_error(fex, make_const(-1.0),
+    #                     make_const(1.0),
+    #                     make_const(4.35),
+    #                     make_const(50))
+    #     print('Test 06: pass')
+
+    def test_07(self):
+        print('\n***** Test 07 *****')
+        fexpr = make_plus(make_pwr('x', 2.0),
+                        make_const(5.0))
+        a, b, n = make_const(0.0), make_const(4.0), make_const(250)
+        approx = midpoint_rule(fexpr, a, b, n)
+        print(approx)
+        err = 0.0001
+        iv = antiderivdef(fexpr, a, b)
+        print(iv)
+        assert abs(approx.get_val() - iv.get_val()) <= err
+        print('Test 07: pass')
+
+    def test_08(self):
+        print('\n***** Test 08 *****')
+        fex = make_plus(make_pwr('x', 2.0), make_const(5.0))
+        a, b, n = make_const(0.0), make_const(4.0), make_const(350)
+        approx = trapezoidal_rule(fex, a, b, n)
+        print(approx)
+        err = 0.0001
+        iv = antiderivdef(fex, a, b)
+        print(iv)
+        assert abs(approx.get_val() - iv.get_val()) <= err
+        print('Test 08: pass')
+
+    def test_09(self):
+        print('\n***** Test 09 *****')
+        fex = make_plus(make_pwr('x', 2.0), make_const(5.0))
+        a, b, n = make_const(0.0), make_const(4.0), make_const(10)
+        approx = simpson_rule(fex, a, b, n)
+        print(approx)
+        err = 0.0001
+        iv = antiderivdef(fex, a, b)
+        print(iv)
+        assert abs(approx.get_val() - iv.get_val()) <= err
+        print('Test 09: pass')
+
+    def test_10(self):
+        print('\n***** Test 10 *****')
+        fex = make_prod(make_prod(make_const(2.0),
+                                make_pwr('x', 1.0)),
+                        make_e_expr(make_pwr('x', 2.0)))
+        a, b, n = make_const(0.0), make_const(2.0), make_const(100)
+        approx = simpson_rule(fex, a, b, n)
+        print(approx)
+        err = 0.0001
+        assert abs(approx.get_val() - 53.5981514272) <= err
+        print('Test 10: pass')
+
+    def test_11(self):
+        print('\n***** Test 11 *****')
+        fex = make_plus(make_const(1.0),
+                        make_pwr('x', 3.0))
+        fex = make_pwr_expr(fex, 0.5)
+        a, b, n = make_const(0.0), make_const(2.0), make_const(100)
+        approx = simpson_rule(fex, a, b, n)
+        print(approx)
+        err = 0.0001
+        assert abs(approx.get_val() - 3.24124) <= err
+        print('Test 11: pass')
+
     def runTest(self):
         pass
 
