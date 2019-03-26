@@ -26,6 +26,7 @@ from antideriv import antideriv, antiderivdef
 from riemann import riemann_approx, riemann_approx_with_gt, plot_riemann_error
 from defintegralapprox import midpoint_rule, trapezoidal_rule, simpson_rule
 from midterm_toolkit import demand_elasticity_function, demand_elasticity, is_demand_elastic
+from midterm_toolkit import net_change, taylor_poly
 
 
 class LogicTests(unittest.TestCase):
@@ -1278,6 +1279,46 @@ class PreMidtermUnitTests(unittest.TestCase):
         for x in range(100):
             assert abs(Fxfunc(x) - gt(x)) <= err
         print('Test 10: pass')
+
+    def test_11(self):
+        print('\n***** Unit Test 11 *****')
+        expr1 = make_prod(mult_expr1=make_const(0.03), mult_expr2=make_pwr('x', 2.0))
+        expr2 = make_prod(mult_expr1=make_const(-2.0), mult_expr2=make_pwr('x', 1.0))
+        expr3 = make_plus(elt_expr1=expr1, elt_expr2=expr2)
+        margRev = make_plus(elt_expr1=expr3, elt_expr2=make_const(25))
+        pl1 = make_const(20)
+        pl2 = make_const(25)
+        revenueNetChange = net_change(margRev, pl1, pl2)
+        gt = -23.75
+        err = 0.01
+        assert abs(revenueNetChange.get_val() - gt) <= err
+        print(f"The net change in revenue if production is raised from {pl1.get_val()} to {pl2.get_val()} is ${revenueNetChange.get_val():.2f}")
+        print('Test 11: pass')
+
+    def test_12(self):
+        print('\n***** Unit Test 12 *****')
+        expr = make_e_expr(make_pwr('x', 1.0))
+        a = make_const(0)
+        n = make_const(3)
+        nthTaylor = taylor_poly(expr, a, n)
+        gt = lambda x: 1 + x + ((1/2) * (x**2)) + ((1/6) * (x**3))
+        err = 0.001
+        for x in range(100):
+            assert(abs(nthTaylor(x) - gt(x)) <= err)
+        print('Test 12: pass')
+
+    def test_13(self):
+        print('\n***** Unit Test 13 *****')
+        expr = make_pwr('x', (1.0 / 2.0))
+        a = make_const(1)
+        n = make_const(2)
+        nthTaylor = taylor_poly(expr, a, n)
+        gt = lambda x: 1 + ((1/2)*(x-1)) - ((1/8) * ((x-1)**2))
+        err = 0.001
+        for x in range(100):
+            assert(abs(nthTaylor(x) - gt(x)) <= err)
+        print('Test 13: pass')
+
 
 if __name__ == '__main__':
 
