@@ -16,8 +16,11 @@ from antideriv import antideriv, antiderivdef
 from hw08_s19 import amplify_grayscale_blur_img_dir
 import numpy as np
 from scipy import stats
+import scipy as sp
 import cv2
 import math as m
+from defintegralapprox import midpoint_rule, trapezoidal_rule, simpson_rule
+from riemann import riemann_approx
 
 
 def demand_elasticity_function(demand_curve=None, returnPyFunc=False):
@@ -217,4 +220,23 @@ def nthTaylor(expr, a, n, i):
     return nthtaylor
     
 
+def olsComparison(filePath):
+    data = sp.genfromtxt(filePath, delimiter='\t')
+    # Split data into x,y vectors
+    x = data[:,0] 
+    y = data[:,1]
 
+    # Remove any NaN's
+    if sp.sum(sp.isnan(y)) > 0: 
+        x = x[~sp.isnan(y)]
+        y = y[~sp.isnan(y)]
+
+    pcoeffs, error = sp.polyfit(x, y, 1)
+    f = sp.poly1d(sp.polyfit(x, y, 1))
+    print('Model coeffs: %s' % pcoeffs)
+    print('Model error: %s' % err)
+    print('Our error: %s' % error(f, x, y))
+
+
+def SSE(f, x, y):
+    return sp.sum((f(x) - y) ** 2)
