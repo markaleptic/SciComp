@@ -24,9 +24,20 @@ from tof import tof
 
 
 def antideriv(i):
-   return simplify(indeffiniteIntegral(i))
+    '''
+    Wrapper function that returns simplified indefinite integral functional 
+    expression for a given expression. Call indefiniteIntegral for 
+    unsimplified indefinite integral.
+    '''
+    assert i is not None
+    return simplify(indefiniteIntegral(i))
    
-def indeffiniteIntegral(i):
+   
+def indefiniteIntegral(i):
+    '''
+    Returns unsimplified indefinite integral functional expression for a given
+    expression.
+    '''
     ## CASE 1: i is a constant
     if isinstance(i, const):
         return make_prod(mult_expr1=i,mult_expr2=make_pwr('x', 1.0))
@@ -106,15 +117,21 @@ def indeffiniteIntegral(i):
         raise Exception('antideriv: unknown case')
 
 
-##
-# Return ln |expr| for ease of reading in antideriv
 def lnIntegral(expr = make_pwr('x', 1.0)):
     return make_ln(make_absv(expr))
 
 
-##
-# Return definite integral of expression from a to b
 def antiderivdef(expr, a, b):
+    '''
+    Return definite integral of a functional expression
+    from a to b.
+
+    expr - Functional representation of an expression
+
+    a - Const object, lower bound for integral
+
+    b - Const object, upper bound for integral
+    '''
     assert isinstance(a, const)
     assert isinstance(b, const)
     

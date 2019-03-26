@@ -25,7 +25,7 @@ from infl import find_infl_pnts
 from antideriv import antideriv, antiderivdef
 from riemann import riemann_approx, riemann_approx_with_gt, plot_riemann_error
 from defintegralapprox import midpoint_rule, trapezoidal_rule, simpson_rule
-
+from midterm_toolkit import demand_elasticity_function, demand_elasticity, is_demand_elastic
 
 
 class LogicTests(unittest.TestCase):
@@ -1130,5 +1130,155 @@ class Assign08UnitTests(unittest.TestCase):
     def runTest(self):
         pass
 
+class PreMidtermUnitTests(unittest.TestCase):
+    def test_01(self):
+        print('\n***** Unit Test 01 *****')
+        demand = make_plus(elt_expr1 = make_const(100), 
+                        elt_expr2 = make_prod(mult_expr1 = make_const(-2.0),
+                                                mult_expr2 = make_pwr('p', 1.0)))
+        price1 = make_const(10)
+        price2 = make_const(20)
+        price3 = make_const(30)
+
+        elasticity = demand_elasticity_function(demand_curve=demand, returnPyFunc=True)
+        err = 0.001
+        assert abs(elasticity(price1.get_val()) - (1/4)) <= err
+        assert abs(elasticity(price2.get_val()) - (2/3)) <= err
+        assert abs(elasticity(price3.get_val()) - (3/2)) <= err
+        print(elasticity(price1.get_val()))
+        print(elasticity(price2.get_val()))
+        print(elasticity(price3.get_val()))
+        print('Test 01: pass')
+    
+    def test_02(self):
+        print('\n***** Unit Test 02 *****')
+        demand = make_plus(make_const(100), make_prod(make_const(-2.0), make_pwr('x', 1.0)))
+        print(demand)
+        gt = lambda x: (2 * x) / (100 - 2 * x)
+        err = 0.0001
+
+        for p in range(49):
+            price = make_const(p)
+            assert abs(demand_elasticity(demand, price).get_val() - gt(p)) <= err
+
+        print('Test 02: pass')
+
+    def test_03(self):
+        print('\n***** Unit Test 03 *****')
+        demand = make_plus(elt_expr1 = make_quot(make_const(18000), make_pwr('x', 1.0)), elt_expr2 = make_const(-1500))
+        print(demand)
+        price = make_const(6.0)
+        print("Is demand elastic at $%d?" % price.get_val())
+        print(is_demand_elastic(demand, price))
+        print('Test 03: pass')
+        
+    def test_04(self):
+        print('\n***** Unit Test 04 *****')
+        fdx = make_pwr('x', 2.0)
+        Fx = antideriv(fdx)
+        assert Fx is not None
+        print(Fx)
+        Fxfunc = tof(Fx)
+        gt = lambda x: (1/3) * (x ** 3)
+        err = 0.0001
+
+        for x in range(100):
+            assert abs(Fxfunc(x) - gt(x)) <= err
+        print('Test 04: pass')
+
+    def test_05(self):
+        print('\n***** Unit Test 05 *****')
+        fdx = make_e_expr(make_prod(mult_expr1=make_const(-2), mult_expr2=make_pwr('x', 1.0)))
+        Fx = antideriv(fdx)
+        assert Fx is not None
+        print(Fx)
+        Fxfunc = tof(Fx)
+        gt = lambda x: (-1/2) * math.e ** (-2*x)
+        err = 0.0001
+
+        for x in range(100):
+            assert abs(Fxfunc(x) - gt(x)) <= err
+        print('Test 05: pass')
+    
+    def test_06(self):
+        print('\n***** Unit Test 06 *****')
+        fdx = make_pwr('x', (1.0/2.0))
+        Fx = antideriv(fdx)
+        assert Fx is not None
+        print(Fx)
+        Fxfunc = tof(Fx)
+        gt = lambda x: (2/3) * (x ** (3/2))
+        err = 0.0001
+
+        for x in range(100):
+            assert abs(Fxfunc(x) - gt(x)) <= err
+        print('Test 06: pass')
+
+    def test_07(self):
+        print('\n***** Unit Test 07 *****')
+        fdx = make_pwr('x', -2.0)
+        Fx = antideriv(fdx)
+        assert Fx is not None
+        print(Fx)
+        Fxfunc = tof(Fx)
+        gt = lambda x: -1 * (x ** -1.0)
+        err = 0.0001
+
+        for x in range(1, 100):
+            assert abs(Fxfunc(x) - gt(x)) <= err
+        print('Test 07: pass')
+
+    def test_08(self):
+        print('\n***** Unit Test 08 *****')
+        fdx = make_pwr('x', -1.0)
+        Fx = antideriv(fdx)
+        assert Fx is not None
+        print(Fx)
+        Fxfunc = tof(Fx)
+        gt = lambda x: math.log(abs(x))
+        err = 0.0001
+
+        for x in range(1, 100):
+            assert abs(Fxfunc(x) - gt(x)) <= err
+        print('Test 08: pass')
+
+    def test_09(self):
+        print('\n***** Unit Test 09 *****')
+        expr1 = make_pwr('x', -3.0)
+        expr2 = make_prod(mult_expr1=make_const(7.0), 
+                          mult_expr2=make_e_expr(make_prod(mult_expr1=make_const(5.0), 
+                                                           mult_expr2=make_pwr('x',1.0))))
+        expr3 = make_plus(expr1, expr2)
+        expr4 = make_prod(mult_expr1=make_const(4.0), mult_expr2=make_pwr('x', -1.0))
+        fdx = make_plus(expr3, expr4)
+        Fx = antideriv(fdx)
+        assert Fx is not None
+        print(Fx)
+        Fxfunc = tof(Fx)
+        gt = lambda x: ((-1 / 2) * (x ** -2)) + ((7/5) * (math.e ** (5 * x))) + (4 * math.log(abs(x)))
+        err = 1
+
+        for x in range(1, 7):
+            print(f"{x} -> Fx: {Fxfunc(x)}\tgt: {gt(x)}")
+            assert abs(Fxfunc(x) - gt(x)) <= err
+            
+        print('Test 09: pass')
+
+    def test_10(self):
+        print('\n***** Unit Test 10 *****')
+        fdx = make_prod(mult_expr1=make_const(3), 
+                        mult_expr2=make_pwr_expr(expr=make_plus(make_pwr('x', 1.0), make_const(2)), deg=-1.0))
+        Fx = antideriv(fdx)
+        assert Fx is not None
+        print(Fx)
+        Fxfunc = tof(Fx)
+        gt = lambda x: 3 * math.log(abs(x + 2))
+        err = 0.0001
+
+        for x in range(100):
+            assert abs(Fxfunc(x) - gt(x)) <= err
+        print('Test 10: pass')
+
 if __name__ == '__main__':
+
     unittest.main()
