@@ -29,11 +29,12 @@ def generate_file_names(ftype, rootdir):
                 yield os.path.join(path, file_name)
 
 
-##
-# Function returns list of 2-tuples. Each tuple contains full path to image and np 
-# 2darray of said image. Function takes file types in the form of '.jpg' and
-# directory to traverse for finding files.
 def read_img_dir(ftype, imgdir):
+    '''
+    Function returns list of 2-tuples. Each tuple contains full path to image and np 
+    2d array of said image. Function takes file types in the form of '.jpg' and
+    directory to traverse for finding files.
+    '''
     filesAndImages = []
     for file in generate_file_names(ftype, imgdir):
         imageArr = cv2.imread(file)
@@ -41,9 +42,10 @@ def read_img_dir(ftype, imgdir):
     return filesAndImages
 
 
-##
-# Function amplifies the specified image by amount in the given color c channel
-def amplify(imgArr, c, amount):    
+def amplify(imgArr, c, amount):
+    '''
+    Function amplifies the specified image by amount in the given color c channel
+    '''
     # Split channels for amplication
     b,g,r = cv2.split(imgArr)
 
@@ -63,7 +65,10 @@ def amplify(imgArr, c, amount):
     return amplifiedImage
 
 
-def amplify_grayscale_blur_img_dir(ftype, in_img_dir, kz, c, amount):  
+def amplify_grayscale_blur_img_dir(ftype, in_img_dir, kz, c, amount):
+    '''
+    Function reads in all the images in the given directory with the specified file type
+    '''
     
     pathAndImages = read_img_dir(ftype, in_img_dir)
 
