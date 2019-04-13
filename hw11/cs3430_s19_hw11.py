@@ -48,9 +48,6 @@ def nra(poly_fexpr, g, n):
 
     return make_const(new_guess)
 
-    
-
-    
 
 ################# Unit Tests for Problem 1 ###################
 
@@ -139,16 +136,17 @@ def ht_detect_lines(img_fp, magn_thresh=20, spl=20):
     # Image Array for image with edges colored white and nonedges colored black
     image_bw_edges = np.zeros((img_shape[0] - 1, img_shape[1] - 1))
 
-    # Hough Accumulator
-    theta_ubound = 181
-    rho_ubound = int(math.sqrt(img_shape[0] ** 2 + img_shape[1] ** 2))
-    hough_table  = np.zeros((theta_ubound, rho_ubound))
+    # Hough Accumulator Construction
+    theta_ubound = 181 # 180 degrees + 1 to account for range(n) yielding n-1 rather than n.
+    rho_ubound   = int(math.sqrt(img_shape[0] ** 2 + img_shape[1] ** 2))
+    hough_table  = np.zeros((rho_ubound, theta_ubound)) # (theta_ubound, rho_ubound))
+    convert_to_degrees = np.pi / 180    # np.cos / sin default to radians
 
-    # Iterate over the pixels in the image ignoring borders to calculate 
+    # Iterate over the pixels in the image ignoring borders for calculations
     for row in range(1, image_arr.shape[0] - 1):
         for col in range(1, image_arr.shape[1] - 1):
             
-            # Calculate change in luminosity from above to below and left to right of the pixel.
+            # Calculate change in luminosity about a pixel -> above to below and left to right of the pixel.
             dy = luminosity(rgb=image_arr[row - 1, col]) - luminosity(rgb=image_arr[row + 1, col])
             dx = luminosity(rgb=image_arr[row, col - 1]) - luminosity(rgb=image_arr[row, col + 1])
             gradient = pixel_gradient(dy, dx)
@@ -160,17 +158,18 @@ def ht_detect_lines(img_fp, magn_thresh=20, spl=20):
 
                 # Conduct accumulator array voting
                 for theta in range(theta_ubound):
-                    rho = int(row * math.cos(theta) + col * math.sin(theta))
-                    hough_table[theta, rho] += 1
+                    rho = int(row * np.cos(theta * convert_to_degrees) + col * np.sin(theta * convert_to_degrees))
+                    hough_table[rho, theta] += 1 # hough_table[theta, rho] += 1
+
 
     # Iterate over accumulator values and place lines on the image if the vote is above the threshold
-    image_with_lines = image_arr[:]
+    image_with_lines = image_arr[:]     # Create separate image to hold lines
 
     for theta in range(theta_ubound):
         for rho in range(rho_ubound):
-            if hough_table[theta, rho] > spl:
-                a = np.sin(theta) 
-                b = np.cos(theta) 
+            if hough_table[rho, theta] > spl:   # if hough_table[theta, rho] > spl:
+                b = np.cos(theta * convert_to_degrees) 
+                a = np.sin(theta * convert_to_degrees)
                 x0 = a * rho
                 y0 = b * rho
                 x1 = int(x0 + 1000 * (-b))
@@ -187,8 +186,10 @@ def pixel_gradient(dy, dx):
 
     return math.sqrt((dy ** 2) + (dx ** 2))
 
+
 def luminosity(rgb, rcoeff=0.2126, gcoeff=0.7152, bcoeff=0.0722):
     """Returns grayscale value a BGR 3-tuple."""
+
     return rcoeff*rgb[2]+gcoeff*rgb[1]+bcoeff*rgb[0]
 
 ################ Unit Tests for Problem 2 ####################
@@ -200,9 +201,8 @@ def luminosity(rgb, rcoeff=0.2126, gcoeff=0.7152, bcoeff=0.0722):
 ## of these tests the same.
 
 def ht_test_abstract(img_fp, magn_thresh, spl):
-    img, lnimg, edimg, ht = ht_detect_lines(img_fp,
-                                            magn_thresh=magn_thresh,
-                                            spl=spl)
+    img, lnimg, edimg, ht = ht_detect_lines(img_fp, magn_thresh=magn_thresh, spl=spl)
+    ht = cv2.equalizeHist(ht.astype(np.uint8))  # Creates image of Houghtable with equalized light
     fileparts = img_fp.split('.')
     if len(fileparts) != 2:
         print("Unable to save image files. Please use absolute file paths for test.")
@@ -212,37 +212,40 @@ def ht_test_abstract(img_fp, magn_thresh, spl):
     img_path = fileparts[0]
     ftype = fileparts[1]
 
+    # Write all the new images to the path and clear memory
     cv2.imwrite(img_path + '_ln.' + ftype, lnimg)
     cv2.imwrite(img_path + '_ed.' + ftype, edimg)
+    cv2.imwrite(img_path + '_ht.' + ftype, ht)
     del img
     del lnimg
     del edimg
+    del ht
 
 def ht_test_01(img_fp, magn_thresh=20, spl=150):
     ht_test_abstract(img_fp, magn_thresh=magn_thresh, spl=spl)
 
-def ht_test_02(img_fp, magn_thresh=35, spl=110):
+def ht_test_02(img_fp, magn_thresh=100, spl=190):
     ht_test_abstract(img_fp, magn_thresh=magn_thresh, spl=spl)
 
-def ht_test_03(img_fp, magn_thresh=35, spl=110):
+def ht_test_03(img_fp, magn_thresh=150, spl=110):
     ht_test_abstract(img_fp, magn_thresh=magn_thresh, spl=spl)
 
-def ht_test_04(img_fp, magn_thresh=35, spl=200):
+def ht_test_04(img_fp, magn_thresh=50, spl=200):
     ht_test_abstract(img_fp, magn_thresh=magn_thresh, spl=spl)
 
-def ht_test_05(img_fp, magn_thresh=20, spl=20):
+def ht_test_05(img_fp, magn_thresh=35, spl=100):
     ht_test_abstract(img_fp, magn_thresh=magn_thresh, spl=spl)
 
 def ht_test_06(img_fp, magn_thresh=35, spl=100):
     ht_test_abstract(img_fp, magn_thresh=magn_thresh, spl=spl)
 
-def ht_test_07(img_fp, magn_thresh=15, spl=200):
+def ht_test_07(img_fp, magn_thresh=15, spl=180):
     ht_test_abstract(img_fp, magn_thresh=magn_thresh, spl=spl)
 
 def ht_test_08(img_fp, magn_thresh=20, spl=450):
     ht_test_abstract(img_fp, magn_thresh=magn_thresh, spl=spl)
 
-def ht_test_09(img_fp, magn_thresh=15, spl=400):
+def ht_test_09(img_fp, magn_thresh=30, spl=400):
     ht_test_abstract(img_fp, magn_thresh=magn_thresh, spl=spl)
 
 def ht_test_10(img_fp, magn_thresh=10, spl=250):
@@ -266,16 +269,14 @@ if __name__ == '__main__':
     # nra_ut_09()
     # nra_ut_10()
     # ht_test_01('img_test/EdgeImage_01.jpg')
-    ht_test_02('img_test/EdgeImage_02.jpg')
-    ht_test_03('img_test/EdgeImage_03.jpg')
+    # ht_test_02('img_test/EdgeImage_02.jpg')
+    # ht_test_03('img_test/EdgeImage_03.jpg')
     ht_test_04('img_test/envelope.jpeg')
-    ht_test_05('img_test/horline.png')
-    ht_test_06('img_test/verline.png')
-    ht_test_07('img_test/cross.png')
-    ht_test_08('img_test/tiles.jpeg')
-    ht_test_09('img_test/kitchen.jpeg')
-    ht_test_10('img_test/road01.png')
-    ht_test_11('img_test/road02.png')
-    ht_test_12('img_test/road03.png')
-
-
+    # ht_test_05('img_test/horline.png')
+    # ht_test_06('img_test/verline.png')
+    # ht_test_07('img_test/cross.png')
+    # ht_test_08('img_test/tiles.jpeg')
+    # ht_test_09('img_test/kitchen.jpeg')
+    # ht_test_10('img_test/road01.png')
+    # ht_test_11('img_test/road02.png')
+    # ht_test_12('img_test/road03.png')
