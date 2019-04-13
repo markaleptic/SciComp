@@ -35,6 +35,7 @@
 .Trashes
 ehthumbs.db
 Thumbs.db
+**/__pycache__
 
 
 # Vim Files #
@@ -58,4 +59,6 @@ tags
 *.png
 *.jpg
 *.jpeg
-**/img*
+**/img
+**/img_test
+!*.py
