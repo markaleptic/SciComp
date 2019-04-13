@@ -24,6 +24,7 @@ from maker import make_plus, make_ln, make_absv
 from maker import make_pwr_expr, make_e_expr
 from plus import plus
 from prod import prod
+import time
 
 ################# Problem 1 (1 point) ###################
 
@@ -137,10 +138,10 @@ def ht_detect_lines(img_fp, magn_thresh=20, spl=20):
     image_bw_edges = np.zeros((img_shape[0] - 1, img_shape[1] - 1))
 
     # Hough Accumulator Construction
-    theta_ubound = 181 # 180 degrees + 1 to account for range(n) yielding n-1 rather than n.
+    theta_ubound = 361
     rho_ubound   = int(math.sqrt(img_shape[0] ** 2 + img_shape[1] ** 2))
-    hough_table  = np.zeros((rho_ubound, theta_ubound)) # (theta_ubound, rho_ubound))
-    convert_to_degrees = np.pi / 180    # np.cos / sin default to radians
+    hough_table  = np.zeros((rho_ubound, theta_ubound))
+    convert_to_degrees = np.pi / 180
 
     # Iterate over the pixels in the image ignoring borders for calculations
     for row in range(1, image_arr.shape[0] - 1):
@@ -149,7 +150,7 @@ def ht_detect_lines(img_fp, magn_thresh=20, spl=20):
             # Calculate change in luminosity about a pixel -> above to below and left to right of the pixel.
             dy = luminosity(rgb=image_arr[row - 1, col]) - luminosity(rgb=image_arr[row + 1, col])
             dx = luminosity(rgb=image_arr[row, col - 1]) - luminosity(rgb=image_arr[row, col + 1])
-            gradient = pixel_gradient(dy, dx)
+            gradient = math.sqrt((dy ** 2) + (dx ** 2))
             
             # Determine if the gradient (change in luminosity) is above the edge threshold.
             if gradient >= magn_thresh:
@@ -159,7 +160,7 @@ def ht_detect_lines(img_fp, magn_thresh=20, spl=20):
                 # Conduct accumulator array voting
                 for theta in range(theta_ubound):
                     rho = int(row * np.cos(theta * convert_to_degrees) + col * np.sin(theta * convert_to_degrees))
-                    hough_table[rho, theta] += 1 # hough_table[theta, rho] += 1
+                    hough_table[rho, theta] += 1
 
 
     # Iterate over accumulator values and place lines on the image if the vote is above the threshold
@@ -167,7 +168,7 @@ def ht_detect_lines(img_fp, magn_thresh=20, spl=20):
 
     for theta in range(theta_ubound):
         for rho in range(rho_ubound):
-            if hough_table[rho, theta] > spl:   # if hough_table[theta, rho] > spl:
+            if hough_table[rho, theta] > spl:
                 b = np.cos(theta * convert_to_degrees) 
                 a = np.sin(theta * convert_to_degrees)
                 x0 = a * rho
@@ -179,12 +180,6 @@ def ht_detect_lines(img_fp, magn_thresh=20, spl=20):
                 cv2.line(image_with_lines, (x1, y1), (x2, y2), (255, 0, 0), 2)
 
     return (image_arr, image_with_lines, image_bw_edges, hough_table)
-
-
-def pixel_gradient(dy, dx):
-    """Returns gradient for the given pixel mask's change in luminosity."""
-
-    return math.sqrt((dy ** 2) + (dx ** 2))
 
 
 def luminosity(rgb, rcoeff=0.2126, gcoeff=0.7152, bcoeff=0.0722):
@@ -202,7 +197,7 @@ def luminosity(rgb, rcoeff=0.2126, gcoeff=0.7152, bcoeff=0.0722):
 
 def ht_test_abstract(img_fp, magn_thresh, spl):
     img, lnimg, edimg, ht = ht_detect_lines(img_fp, magn_thresh=magn_thresh, spl=spl)
-    ht = cv2.equalizeHist(ht.astype(np.uint8))  # Creates image of Houghtable with equalized light
+    ht = cv2.equalizeHist(ht.astype(np.uint8))  # Creates image of Hough Table with equalized light
     fileparts = img_fp.split('.')
     if len(fileparts) != 2:
         print("Unable to save image files. Please use absolute file paths for test.")
@@ -233,50 +228,57 @@ def ht_test_03(img_fp, magn_thresh=150, spl=110):
 def ht_test_04(img_fp, magn_thresh=50, spl=200):
     ht_test_abstract(img_fp, magn_thresh=magn_thresh, spl=spl)
 
-def ht_test_05(img_fp, magn_thresh=35, spl=100):
+def ht_test_05(img_fp, magn_thresh=38, spl=105):
     ht_test_abstract(img_fp, magn_thresh=magn_thresh, spl=spl)
 
-def ht_test_06(img_fp, magn_thresh=35, spl=100):
+def ht_test_06(img_fp, magn_thresh=38, spl=105):
     ht_test_abstract(img_fp, magn_thresh=magn_thresh, spl=spl)
 
-def ht_test_07(img_fp, magn_thresh=15, spl=180):
+def ht_test_07(img_fp, magn_thresh=15, spl=200):
     ht_test_abstract(img_fp, magn_thresh=magn_thresh, spl=spl)
 
 def ht_test_08(img_fp, magn_thresh=20, spl=450):
     ht_test_abstract(img_fp, magn_thresh=magn_thresh, spl=spl)
 
-def ht_test_09(img_fp, magn_thresh=30, spl=400):
+def ht_test_09(img_fp, magn_thresh=15, spl=400):
     ht_test_abstract(img_fp, magn_thresh=magn_thresh, spl=spl)
 
 def ht_test_10(img_fp, magn_thresh=10, spl=250):
     ht_test_abstract(img_fp, magn_thresh=magn_thresh, spl=spl)
 
-def ht_test_11(img_fp, magn_thresh=10, spl=210):
+def ht_test_11(img_fp, magn_thresh=13, spl=210):
     ht_test_abstract(img_fp, magn_thresh=magn_thresh, spl=spl)
 
-def ht_test_12(img_fp, magn_thresh=5, spl=205):
+def ht_test_12(img_fp, magn_thresh=4.3, spl=210):
     ht_test_abstract(img_fp, magn_thresh=magn_thresh, spl=spl)
     
+    
 if __name__ == '__main__':
-    # nra_ut_01()
-    # nra_ut_02()
-    # nra_ut_03()
-    # nra_ut_04()
-    # nra_ut_05()
-    # nra_ut_06()
-    # nra_ut_07()
-    # nra_ut_08()
-    # nra_ut_09()
-    # nra_ut_10()
-    # ht_test_01('img_test/EdgeImage_01.jpg')
-    # ht_test_02('img_test/EdgeImage_02.jpg')
-    # ht_test_03('img_test/EdgeImage_03.jpg')
-    ht_test_04('img_test/envelope.jpeg')
-    # ht_test_05('img_test/horline.png')
-    # ht_test_06('img_test/verline.png')
-    # ht_test_07('img_test/cross.png')
-    # ht_test_08('img_test/tiles.jpeg')
-    # ht_test_09('img_test/kitchen.jpeg')
-    # ht_test_10('img_test/road01.png')
-    # ht_test_11('img_test/road02.png')
-    # ht_test_12('img_test/road03.png')
+    start = time.time()
+    nra_ut_01()
+    nra_ut_02()
+    nra_ut_03()
+    nra_ut_04()
+    nra_ut_05()
+    nra_ut_06()
+    nra_ut_07()
+    nra_ut_08()
+    nra_ut_09()
+    nra_ut_10()
+    end = time.time()
+    print(f"Newton-Raphson Algorithm tests completed in {end - start :f} seconds")
+    start = time.time()
+    ht_test_01('img/EdgeImage_01.jpg')
+    ht_test_02('img/EdgeImage_02.jpg')
+    ht_test_03('img/EdgeImage_03.jpg')
+    ht_test_04('img/envelope.jpeg')
+    ht_test_05('img/horline.png')
+    ht_test_06('img/verline.png')
+    ht_test_07('img/cross.png')
+    ht_test_08('img/tiles.jpeg')
+    ht_test_09('img/kitchen.jpeg')
+    ht_test_10('img/road01.png')
+    ht_test_11('img/road02.png')
+    ht_test_12('img/road03.png')
+    end = time.time()
+    print(f"Line detection image processing tests completed in {end - start :f} seconds")
