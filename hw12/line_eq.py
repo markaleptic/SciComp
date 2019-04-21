@@ -1,6 +1,10 @@
 #!/usr/bin/python
+from const import const
+from var import var
+from prod import prod
+from pwr import pwr
+from plus import plus
 
-# bugs to vladimir kulyukin on canvas.
 
 class line_eq(object):
     def __init__(self, lhs=None, rhs=None):
@@ -15,5 +19,3 @@ class line_eq(object):
 
     def __str__(self):
         return str(self.__lhs__) + ' = ' + str(self.__rhs__)
-
-
