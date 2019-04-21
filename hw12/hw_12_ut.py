@@ -265,5 +265,36 @@ class Assign12(unittest.TestCase):
     def runTest(self):
         pass
 
+#TODO incorporate these:
+"""
+### sample line equations
+lneq1 = make_line_eq(make_var('y'),
+                     make_const(2))
+lneq2 = make_line_eq(make_var('y'),
+                     make_var('x'))
+lneq3 = make_line_eq(make_var('y'),
+                     make_var('y'))
+lneq4 = make_line_eq(make_var('y'),
+                     make_prod(make_const(2.0),
+                               make_pwr('x', 1.0)))
+lneq5 = make_line_eq(make_var('y'),
+                     make_prod(make_const(5.0),
+                               make_pwr('y', 1.0)))
+lneq6 = make_line_eq(make_var('y'),
+                     make_plus(make_prod(make_const(5.0),
+                                         make_pwr('x', 1.0)),
+                               make_const(4.0)))
+lneq7 = make_line_eq(make_var('y'),
+                     make_plus(make_prod(make_const(5.0),
+                                         make_pwr('y', 1.0)),
+                               make_const(4.0)))
+lneq8 = make_line_eq(make_var('y'),
+                     make_plus(make_prod(make_const(3.0),
+                                         make_pwr('x', 1.0)),
+                               make_const(-4.0)))
+"""
+
 if __name__ == '__main__':
     unittest.main()
+
+

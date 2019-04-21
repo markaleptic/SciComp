@@ -24,34 +24,6 @@ from tof import tof
 import sys
 
 
-
-### sample line equations
-lneq1 = make_line_eq(make_var('y'),
-                     make_const(2))
-lneq2 = make_line_eq(make_var('y'),
-                     make_var('x'))
-lneq3 = make_line_eq(make_var('y'),
-                     make_var('y'))
-lneq4 = make_line_eq(make_var('y'),
-                     make_prod(make_const(2.0),
-                               make_pwr('x', 1.0)))
-lneq5 = make_line_eq(make_var('y'),
-                     make_prod(make_const(5.0),
-                               make_pwr('y', 1.0)))
-lneq6 = make_line_eq(make_var('y'),
-                     make_plus(make_prod(make_const(5.0),
-                                         make_pwr('x', 1.0)),
-                               make_const(4.0)))
-lneq7 = make_line_eq(make_var('y'),
-                     make_plus(make_prod(make_const(5.0),
-                                         make_pwr('y', 1.0)),
-                               make_const(4.0)))
-lneq8 = make_line_eq(make_var('y'),
-                     make_plus(make_prod(make_const(3.0),
-                                         make_pwr('x', 1.0)),
-                               make_const(-4.0)))
-
-
 def line_intersection(lneq1, lneq2):
   """Returns Point2d (x,y) coordinate pair where the two line equations intersect, or None"""
   
@@ -132,7 +104,6 @@ def opt_prob_1a():
   maxPoint, maxVal = maximize_obj_fun(f, [intersection1, 
                                           intersection2, 
                                           intersection3])
-
   print("Max Point", maxPoint)
   print("Max Value", maxVal)
 
@@ -157,7 +128,6 @@ def opt_prob_1b():
                                           intersection2, 
                                           intersection3,
                                           intersection4])
-
   print("Min Point", minPoint)
   print("Min Value", minVal)
 
@@ -178,7 +148,6 @@ def opt_prob_1c():
   maxPoint, maxVal = maximize_obj_fun(f, [intersection1, 
                                           intersection2, 
                                           intersection3])
-
   print("Max Point", maxPoint)
   print("Max Value", maxVal)
   
