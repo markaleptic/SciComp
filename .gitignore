@@ -62,3 +62,7 @@ tags
 **/img
 **/img_test
 !*.py
+
+# Pickles #
+###########
+*.pck

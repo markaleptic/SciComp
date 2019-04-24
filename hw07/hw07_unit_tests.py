@@ -27,16 +27,6 @@ from infl import find_infl_pnts
 from antideriv import antideriv
 
 
-class LogicTests(unittest.TestCase):
-    def test_make_var_pass_to_make_pwr(self):
-        varExpr = make_var('x')
-        pwrExpr = make_pwr('x', 1.0)
-        assert str(varExpr) == str(pwrExpr)
-
-    def runTest(self):
-        pass
-
-
 class Assign01UnitTests(unittest.TestCase):
     def test_assgn_01_ut_01(self):
         print('\n***** Assign 01: Unit Test 01 ************')
